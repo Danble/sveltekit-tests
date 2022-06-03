@@ -15,7 +15,6 @@
 		// https://docs.mapbox.com/mapbox-gl-js/api/#styleimageinterface#onadd
 		// I don't understand 100% this part
 		onAdd: function (_map, gl) {
-			console.log('pre gl', gl);
 			// create GLSL source for vertex shader
 			const vertexSource = `
                 uniform mat4 u_matrix;
@@ -75,11 +74,11 @@
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 			gl.bufferData(
 				gl.ARRAY_BUFFER,
+				// Should be better we initialized the srcData later for our purposes?
 				//new Float32Array([helsinki.x, helsinki.y, berlin.x, berlin.y, kyiv.x, kyiv.y]),
 				new Float32Array(layerCoordinates.map((el) => [el.x, el.y]).flat()),
 				gl.STATIC_DRAW
 			);
-			console.log('post gl', gl);
 		},
 
 		// method fired on each animation frame
@@ -145,6 +144,7 @@
 		//TODO show a confirm alert if they want to remove a fixed marker
 		markers.pop().remove();
 	}
+	//NOTE The problem with layers is that they use the Web Graphics Library which in turn requires also special hardware specification in devices
 	function addLayer() {
 		map.addLayer(highlightLayer);
 		/* map.flyTo({
