@@ -4,6 +4,8 @@
 	import mapboxgl from 'mapbox-gl';
 
 	let layerCoordinates = [];
+	let markerId: number;
+	let markersIntuitive = true;
 	const markersConfig = { color: '#0d8529', scale: 1.2, draggable: true };
 
 	// create a custom style layer to implement the WebGL content
@@ -26,7 +28,7 @@
 			// create GLSL source for fragment shader
 			const fragmentSource = `
                 void main() {
-                    gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);
+                    gl_FragColor = vec4(0.1, 0.86, 0.4, 0.9);
                 }`;
 
 			// create a vertex shader
@@ -91,12 +93,17 @@
 			gl.vertexAttribPointer(this.aPos, 2, gl.FLOAT, false, 0, 0);
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 3); //TODO need to config this, right now it works only for triangles
+			if (markersIntuitive) {
+				gl.drawArrays(gl.TRIANGLE_FAN, 0, markers.length);
+			} else {
+				gl.drawArrays(gl.TRIANGLE_STRIP, 0, markers.length);
+			}
 		}
 	};
 
 	let center_layer: number[] = [];
 	let markers: mapboxgl.marker[] = [];
+	let currentMarker: number;
 	let container: HTMLElement;
 	let map: mapboxgl.Map;
 	let mapbox: typeof import('mapbox-gl');
@@ -130,19 +137,34 @@
 	});
 
 	function addMarker() {
+		const marker = new mapboxgl.Marker(markersConfig).setLngLat([-19.07, 9]).addTo(map);
 		//TODO make a conditional that prevents to add a new one if it is in the exact same coordinates and is not draggable
-		markers.push(new mapboxgl.Marker(markersConfig).setLngLat([-19.07, 9]).addTo(map));
+		markers.push(marker);
+
+		const popup = new mapboxgl.Popup({ closeOnClick: false })
+			.setLngLat(marker.getLngLat())
+			.setText(markers.length.toString())
+			.addTo(map);
+		marker.setPopup(popup);
+
 		map.flyTo({
 			center: [0, 0]
+		});
+		marker.on('dragend', () => {
+			currentMarker = parseInt(marker.getPopup()._container.innerText.replace('\nx', '')) - 1;
+			console.log(marker.getPopup());
 		});
 		console.log('marker created', markers);
 	}
 	function setPin() {
+		//TODO make setpin dinamic
 		markers[markers.length - 1].setDraggable(false);
 	}
 	function removeMarker() {
 		//TODO show a confirm alert if they want to remove a fixed marker
-		markers.pop().remove();
+		markers[currentMarker].remove();
+		markers.splice(currentMarker, 1);
+		markers.forEach((marker, index) => marker.getPopup().setText((index + 1).toString()));
 	}
 	//NOTE The problem with layers is that they use the Web Graphics Library which in turn requires also special hardware specification in devices
 	function addLayer() {
@@ -165,7 +187,7 @@
 	<button on:click={removeMarker}>Remove marker</button>
 	<button on:click={addLayer}>Add layer</button>
 	<button on:click={removeLayer}>Remove layer</button>
-	<button on:click={() => console.log(map)}>Map info</button>
+	<button on:click={() => (markersIntuitive = !markersIntuitive)}>Toggle markers behaviour</button>
 </section>
 <div class="relative flex-1 full-height" bind:this={container}>{map}</div>
 
