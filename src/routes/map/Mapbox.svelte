@@ -166,13 +166,15 @@
 
 <section>
 	<h1>Mapbox</h1>
-	<button on:click={addMarker}>Add marker</button>
-	<button on:click={setPin}>Set pin</button>
-	<button on:click={unpin}>Unpin last marker</button>
-	<button on:click={removeMarker}>Remove marker</button>
-	<button on:click={addLayer}>Add layer</button>
-	<button on:click={removeLayer}>Remove layer</button>
-	<button on:click={() => (markersIntuitive = !markersIntuitive)}>Toggle markers behaviour</button>
+	<button class="marker" on:click={addMarker}>Add marker</button>
+	<button class="marker" on:click={removeMarker}>Remove marker</button>
+	<button class="pin" on:click={setPin}>Set pin</button>
+	<button class="pin" on:click={unpin}>Unpin last marker</button>
+	<button class="layer" on:click={addLayer}>Add layer</button>
+	<button class="layer" on:click={removeLayer}>Remove layer</button>
+	<button class="toggle" on:click={() => (markersIntuitive = !markersIntuitive)}
+		>Toggle markers behaviour</button
+	>
 </section>
 <div class="relative flex-1 full-height" bind:this={container}>{map}</div>
 
@@ -184,5 +186,17 @@
 	}
 	.full-height {
 		height: 86vh;
+	}
+	.marker {
+		background-color: rgb(22, 165, 22);
+	}
+	.pin {
+		background-color: rgb(187, 187, 48);
+	}
+	.layer {
+		background-color: rgb(230, 109, 129);
+	}
+	.toggle {
+		background-color: rgb(149, 102, 194);
 	}
 </style>
