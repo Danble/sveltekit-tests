@@ -87,6 +87,7 @@
 	let container: HTMLElement;
 	let map: mapboxgl.Map;
 	let mapbox: typeof import('mapbox-gl');
+
 	onMount(async () => {
 		const mapboxModule = await import('mapbox-gl');
 		mapbox = mapboxModule.default;
@@ -135,8 +136,20 @@
 	function setPin() {
 		markers[currentMarker].setDraggable(false);
 	}
+	function unpin() {
+		const pinnedMarkers = markers.filter((marker) => !marker.isDraggable());
+		if (pinnedMarkers.length > 0) {
+			pinnedMarkers.pop().setDraggable(true);
+		} else {
+			alert("There's no pinned marker");
+		}
+	}
 	function removeMarker() {
 		//TODO show a confirm alert if they want to remove a fixed marker
+		if (!markers[currentMarker].isDraggable()) {
+			alert("You can't delete pinned markers");
+			return false;
+		}
 		markers[currentMarker].remove();
 		markers.splice(currentMarker, 1);
 		markers.forEach((marker, index) => marker.getPopup().setText((index + 1).toString()));
@@ -155,6 +168,7 @@
 	<h1>Mapbox</h1>
 	<button on:click={addMarker}>Add marker</button>
 	<button on:click={setPin}>Set pin</button>
+	<button on:click={unpin}>Unpin last marker</button>
 	<button on:click={removeMarker}>Remove marker</button>
 	<button on:click={addLayer}>Add layer</button>
 	<button on:click={removeLayer}>Remove layer</button>
