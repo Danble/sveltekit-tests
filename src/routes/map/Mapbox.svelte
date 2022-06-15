@@ -157,8 +157,7 @@
 		console.log('marker created', markers);
 	}
 	function setPin() {
-		//TODO make setpin dinamic
-		markers[markers.length - 1].setDraggable(false);
+		markers[currentMarker].setDraggable(false);
 	}
 	function removeMarker() {
 		//TODO show a confirm alert if they want to remove a fixed marker
