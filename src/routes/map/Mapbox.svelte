@@ -133,6 +133,16 @@
 		});
 		console.log('marker created', markers);
 	}
+	function removeMarker() {
+		//TODO show a confirm alert if they want to remove a fixed marker
+		if (!markers[currentMarker].isDraggable()) {
+			alert("You can't delete pinned markers");
+			return false;
+		}
+		markers[currentMarker].remove();
+		markers.splice(currentMarker, 1);
+		markers.forEach((marker, index) => marker.getPopup().setText((index + 1).toString()));
+	}
 	function setPin() {
 		markers[currentMarker].setDraggable(false);
 	}
@@ -143,16 +153,6 @@
 		} else {
 			alert("There's no pinned marker");
 		}
-	}
-	function removeMarker() {
-		//TODO show a confirm alert if they want to remove a fixed marker
-		if (!markers[currentMarker].isDraggable()) {
-			alert("You can't delete pinned markers");
-			return false;
-		}
-		markers[currentMarker].remove();
-		markers.splice(currentMarker, 1);
-		markers.forEach((marker, index) => marker.getPopup().setText((index + 1).toString()));
 	}
 	//NOTE The problem with layers is that they use the Web Graphics Library which in turn requires also special hardware specification in devices
 	function addLayer() {
