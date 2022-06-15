@@ -4,7 +4,6 @@
 	import mapboxgl from 'mapbox-gl';
 
 	let layerCoordinates = [];
-	let markerId: number;
 	let markersIntuitive = true;
 	const markersConfig = { color: '#0d8529', scale: 1.2, draggable: true };
 
@@ -51,33 +50,15 @@
 			// End
 
 			// define vertices of the triangle to be rendered in the custom style layer
-			/* const helsinki = mapboxgl.MercatorCoordinate.fromLngLat({
-				lng: 25.004,
-				lat: 60.239
-			});
-			const berlin = mapboxgl.MercatorCoordinate.fromLngLat({
-				lng: 13.403,
-				lat: 52.562
-			});
-			const kyiv = mapboxgl.MercatorCoordinate.fromLngLat({
-				lng: 30.498,
-				lat: 50.541
-			}); */
 			markers.forEach((marker) => {
 				layerCoordinates.push(mapboxgl.MercatorCoordinate.fromLngLat(marker.getLngLat()));
 			});
 
-			/* console.log(markers.map((marker) => [marker._pos.x, marker._pos.y]).flat());
-			let tempMarkers = markers;
-			markers.forEach((marker) => marker.remove());
-			markers = []; */
 			// create and initialize a WebGLBuffer to store vertex and color data
 			this.buffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 			gl.bufferData(
 				gl.ARRAY_BUFFER,
-				// Should be better we initialized the srcData later for our purposes?
-				//new Float32Array([helsinki.x, helsinki.y, berlin.x, berlin.y, kyiv.x, kyiv.y]),
 				new Float32Array(layerCoordinates.map((el) => [el.x, el.y]).flat()),
 				gl.STATIC_DRAW
 			);
@@ -101,7 +82,6 @@
 		}
 	};
 
-	let center_layer: number[] = [];
 	let markers: mapboxgl.marker[] = [];
 	let currentMarker: number;
 	let container: HTMLElement;
@@ -124,10 +104,6 @@
 				zoom: 3 // starting zoom
 			});
 			tempMap.addControl(new mapbox.NavigationControl({ showCompass: false }), 'bottom-right');
-			// el.addControl(new mapbox.GeolocateControl(), "bottom-right");
-
-			// el.on("dragend", () => dispatch("recentre", { center: el.getCenter() }));
-
 			tempMap.on('load', () => {
 				map = tempMap;
 			});
@@ -168,10 +144,6 @@
 	//NOTE The problem with layers is that they use the Web Graphics Library which in turn requires also special hardware specification in devices
 	function addLayer() {
 		map.addLayer(highlightLayer);
-		/* map.flyTo({
-			center: center_layer
-		}); */
-		center_layer = [];
 	}
 	function removeLayer() {
 		layerCoordinates = [];
