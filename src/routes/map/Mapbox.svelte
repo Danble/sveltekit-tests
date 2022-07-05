@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import _ from 'lodash';
 	import mapboxgl from 'mapbox-gl';
 
 	let layerCoordinates = [];
@@ -53,13 +52,12 @@
 			markers.forEach((marker) => {
 				layerCoordinates.push(mapboxgl.MercatorCoordinate.fromLngLat(marker.getLngLat()));
 			});
-
 			// create and initialize a WebGLBuffer to store vertex and color data
 			this.buffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 			gl.bufferData(
 				gl.ARRAY_BUFFER,
-				new Float32Array(layerCoordinates.map((el) => [el.x, el.y]).flat()),
+				new Float32Array(layerCoordinates.flatMap((el) => [el.x, el.y])),
 				gl.STATIC_DRAW
 			);
 		},
